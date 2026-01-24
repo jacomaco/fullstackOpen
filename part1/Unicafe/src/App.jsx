@@ -35,8 +35,6 @@ const Statistics = ({good, neutral, bad}) => {
 }
 
 const StatisticLine = ({ text, value }) => {
-	console.log(text);
-	console.log(value);
 	return (
 		<tr>
 			<td>{text}</td>
