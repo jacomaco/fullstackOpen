@@ -1,13 +1,17 @@
 import { useState } from "react";
 
 // Components
-const Display = ({ anecdotes, selected, votes }) => {
-    return (
-        <div>
-            <p>{anecdotes[selected]}</p>
-			<p>has {votes[selected]} votes</p>
+const Display = ({ anecdotes, selected, votes , title , isWinnerView}) => {
+	const mostVotesIndex = votes.indexOf(Math.max(...votes));
+	const indexToShow = isWinnerView ? mostVotesIndex : selected;
+
+	return (
+		<div>
+			<h1>{ title }</h1>
+            <p>{anecdotes[indexToShow]}</p>
+			<p>has {votes[indexToShow]} votes</p>
         </div>
-    );
+	)
 };
 
 const Button = ({ onClick, text }) => <button onClick={onClick}>{text}</button>
@@ -16,7 +20,7 @@ const App = () => {
 	// Staet and variables
     const anecdotes = [
         "If it hurts, do it more often.",
-        "Adding manpower to a late software project makes it later!",
+        "Adding manpower to a late softwarvotee project makes it later!",
         "The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.",
         "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.",
         "Premature optimization is the root of all evil.",
@@ -24,6 +28,10 @@ const App = () => {
         "Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.",
         "The only way to go fast, is to go well.",
     ];
+	const title = {
+		title: "Anecdote of the day",
+		titleWithVotes: "Anecdote with most votes"
+	}
 	const [votes, setVotes] = useState([...anecdotes].fill(0));
     const [selected, setSelected] = useState(0);
 	
@@ -40,9 +48,10 @@ const App = () => {
 
     return (
         <div>
-            <Display anecdotes={anecdotes} selected={selected} votes={votes} />
+            <Display anecdotes={anecdotes} selected={selected} votes={votes} title={title.title} isWinnerView={false}/>
 			<Button onClick={handleVotes} text="vote" />
             <Button onClick={handleNext} text="next anecdote" />
+			<Display anecdotes={anecdotes} selected={selected} votes={votes} title={title.titleWithVotes} isWinnerView={true}/>
         </div>
     );
 };
