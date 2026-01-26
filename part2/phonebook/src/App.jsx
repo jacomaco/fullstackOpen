@@ -8,7 +8,7 @@ const Number = ({ name, number }) => {
   );
 };
 
-const Form = ({
+const PersonForm = ({
   onSubmit,
   handleNameChange,
   handleNumberchange,
@@ -31,12 +31,35 @@ const Form = ({
   );
 };
 
+const Filter = ({ handleSearchChange, newSearch}) => {
+  return (
+    <div>
+      filter shown with <input type="text" value={newSearch} onChange={handleSearchChange} />
+    </div>
+  );
+};
+
+const Persons = ({ persons, newSearch }) => {
+  return (
+    <ul>
+      {persons.filter((person) => {
+        return person.name.trim().toUpperCase().includes(newSearch.trim().toUpperCase())
+      }).map((person) => (
+        <Number key={person.id} name={person.name} number={person.number} />
+      ))}
+    </ul>
+  )
+}
 const App = () => {
   const [persons, setPersons] = useState([
-    { name: "Artho Hellas", number: "040-1234567" },
+    { name: "Artho Hellas", number: "040-1234567", id: 1},
+    { name: "Ada Lovelace", number: "39-44-5323523", id: 2 },
+    { name: "Dan Abramov", number: "12-43-234345", id: 3 },
+    { name: "Mary Poppendieck", number: "39-23-6423122", id: 4 },
   ]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
+  const [newSearch, setNewSearch] = useState("");
 
   const handleNameChange = (e) => {
     setNewName(e.target.value);
@@ -44,6 +67,9 @@ const App = () => {
   const handleNumberchange = (e) => {
     setNewNumber(e.target.value);
   };
+  const handleSearchChange = (e) => {
+    setNewSearch(e.target.value);
+  }
 
   const addName = (e) => {
     e.preventDefault();
@@ -57,6 +83,7 @@ const App = () => {
       const newNameObject = {
         name: newName,
         number: newNumber,
+        id: persons.length + 1,
       };
       setPersons(persons.concat(newNameObject));
     }
@@ -67,7 +94,9 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Form
+      <Filter handleSearchChange={handleSearchChange} newSearch={newSearch}/>
+      <h2>add a new</h2>
+      <PersonForm
         onSubmit={addName}
         handleNameChange={handleNameChange}
         handleNumberchange={handleNumberchange}
@@ -75,17 +104,7 @@ const App = () => {
         newNumber={newNumber}
       />
       <h2>Numbers</h2>
-      <ul>
-        {persons.map((person) => (
-          <Number
-            key={person.name}
-            name={person.name}
-            number={person.number}
-            newName={newName}
-            newNumber={newNumber}
-          />
-        ))}
-      </ul>
+      <Persons persons={persons} newSearch={newSearch} />
     </div>
   );
 };
