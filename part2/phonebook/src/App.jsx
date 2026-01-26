@@ -1,48 +1,89 @@
 import { useState } from "react";
 
-const Number = ({ name }) => {
-  return <li>{name}</li>;
+const Number = ({ name, number }) => {
+  return (
+    <li>
+      {name} {number}
+    </li>
+  );
+};
+
+const Form = ({
+  onSubmit,
+  handleNameChange,
+  handleNumberchange,
+  newName,
+  newNumber,
+}) => {
+  return (
+    <form onSubmit={onSubmit}>
+      <div>
+        name: <input type="text" value={newName} onChange={handleNameChange} />
+      </div>
+      <div>
+        Number:{" "}
+        <input type="text" value={newNumber} onChange={handleNumberchange} />
+      </div>
+      <div>
+        <button type="submit">add</button>
+      </div>
+    </form>
+  );
 };
 
 const App = () => {
-  const [persons, setPersons] = useState([{ name: "Artho Hellas" }]);
+  const [persons, setPersons] = useState([
+    { name: "Artho Hellas", number: "040-1234567" },
+  ]);
   const [newName, setNewName] = useState("");
+  const [newNumber, setNewNumber] = useState("");
 
   const handleNameChange = (e) => {
     setNewName(e.target.value);
   };
+  const handleNumberchange = (e) => {
+    setNewNumber(e.target.value);
+  };
 
   const addName = (e) => {
     e.preventDefault();
-    console.log(newName);
-    console.log(persons);
-    
-    if (persons.find((person) => person.name.trim() === newName.trim()) !== undefined) {
+
+    if (
+      persons.find((person) => person.name.trim() === newName.trim()) !==
+      undefined
+    ) {
       alert(`${newName} is already added to phonebook`);
     } else {
       const newNameObject = {
         name: newName,
+        number: newNumber,
       };
       setPersons(persons.concat(newNameObject));
     }
-    setNewName('')
+    setNewName("");
+    setNewNumber("");
   };
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <form onSubmit={addName}>
-        <div>
-          name: <input value={newName} onChange={handleNameChange} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <Form
+        onSubmit={addName}
+        handleNameChange={handleNameChange}
+        handleNumberchange={handleNumberchange}
+        newName={newName}
+        newNumber={newNumber}
+      />
       <h2>Numbers</h2>
       <ul>
         {persons.map((person) => (
-          <Number key={person.name} name={person.name} />
+          <Number
+            key={person.name}
+            name={person.name}
+            number={person.number}
+            newName={newName}
+            newNumber={newNumber}
+          />
         ))}
       </ul>
     </div>
