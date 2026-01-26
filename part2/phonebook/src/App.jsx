@@ -14,11 +14,18 @@ const App = () => {
 
   const addName = (e) => {
     e.preventDefault();
-    const newNameObject = {
-      name: newName,
-    };
-    setPersons(persons.concat(newNameObject));
-    setNewName("");
+    console.log(newName);
+    console.log(persons);
+    
+    if (persons.find((person) => person.name.trim() === newName.trim()) !== undefined) {
+      alert(`${newName} is already added to phonebook`);
+    } else {
+      const newNameObject = {
+        name: newName,
+      };
+      setPersons(persons.concat(newNameObject));
+    }
+    setNewName('')
   };
 
   return (
