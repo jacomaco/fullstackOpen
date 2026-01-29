@@ -14,7 +14,6 @@ const App = () => {
       .then(response => {
         console.log('promise fulfilled');
         setNotes(response.data)
-        
       })
   }, []) 
   console.log('render', notes.length, 'notes');
@@ -25,8 +24,14 @@ const App = () => {
     const noteObject = {
 			content: newNote,
 			important: Math.random() < 0.5,
-			id: String(notes.length + 1),
 		}
+
+    axios
+      .post('http://localhost:3001/notes', )
+      .then(response => {
+        console.log(response);
+      })
+
 		setNotes(notes.concat(noteObject))
 		setNewNote('')
   };
