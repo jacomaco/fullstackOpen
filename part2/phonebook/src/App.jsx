@@ -87,9 +87,8 @@ const App = () => {
       const newNameObject = {
         name: newName,
         number: newNumber,
-        id: persons.length + 1,
       };
-      // Add in method that updates the server and the state with the new object
+      // Add in .catch to handle errors with the server or bad requests
       personService
         .create(newNameObject)
         .then( newPerson => {
@@ -97,8 +96,6 @@ const App = () => {
           setNewName("");
           setNewNumber("");
         })
-
-      // setPersons(persons.concat(newNameObject));
     }
   };
 
