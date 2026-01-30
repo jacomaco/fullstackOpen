@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from 'axios';
+import personService from './services/persons';
 
 const Number = ({ name, number }) => {
   return (
@@ -58,12 +58,10 @@ const App = () => {
   const [newSearch, setNewSearch] = useState("");
 
   useEffect(() => {
-    console.log('start useEffect');
-    axios
-      .get("http://localhost:3001/persons")
-      .then(request => {
-        console.log('promise fullfilled');
-        setPersons(request.data)
+    personService
+      .getAll()
+      .then(initialData => {
+        setPersons(initialData)
       })
   }, [])
 
@@ -77,7 +75,7 @@ const App = () => {
     setNewSearch(e.target.value);
   }
 
-  const addName = (e) => {
+  const addName = (e) => { // Add http post  (create())
     e.preventDefault();
 
     if (
@@ -91,10 +89,17 @@ const App = () => {
         number: newNumber,
         id: persons.length + 1,
       };
-      setPersons(persons.concat(newNameObject));
+      // Add in method that updates the server and the state with the new object
+      personService
+        .create(newNameObject)
+        .then( newPerson => {
+          setPersons(persons.concat(newPerson));
+          setNewName("");
+          setNewNumber("");
+        })
+
+      // setPersons(persons.concat(newNameObject));
     }
-    setNewName("");
-    setNewNumber("");
   };
 
   return (
