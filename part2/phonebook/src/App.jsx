@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import personService from './services/persons';
 
-const Number = ({ name, number }) => {
+const Number = ({ person, onClick }) => {
   return (
     <li>
-      {name} {number}
+      {person.name} {person.number} <button onClick={() => onClick(person)}>delete</button>
     </li>
   );
 };
@@ -40,13 +40,13 @@ const Filter = ({ handleSearchChange, newSearch}) => {
   );
 };
 
-const Persons = ({ persons, newSearch }) => {
+const Persons = ({ persons, newSearch, onClick }) => {
   return (
     <ul>
       {persons.filter((person) => {
         return person.name.trim().toUpperCase().includes(newSearch.trim().toUpperCase())
       }).map((person) => (
-        <Number key={person.id} name={person.name} number={person.number} />
+        <Number key={person.id} person={person} onClick={onClick} />
       ))}
     </ul>
   )
@@ -73,6 +73,16 @@ const App = () => {
   };
   const handleSearchChange = (e) => {
     setNewSearch(e.target.value);
+  }
+  const handleDelete = (person) => {
+    // Create delete request to json server
+    if (window.confirm(`Delete: ${person.name} ?`)) {
+      personService
+        .deleteEntrie(person.id)
+        .then(() => {
+          setPersons(persons.filter(p => p.id !== person.id))
+        })
+    }
   }
 
   const addName = (e) => { // Add http post  (create())
@@ -112,7 +122,7 @@ const App = () => {
         newNumber={newNumber}
       />
       <h2>Numbers</h2>
-      <Persons persons={persons} newSearch={newSearch} />
+      <Persons persons={persons} newSearch={newSearch} onClick={handleDelete}/>
     </div>
   );
 };
