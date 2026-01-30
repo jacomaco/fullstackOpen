@@ -75,7 +75,6 @@ const App = () => {
     setNewSearch(e.target.value);
   }
   const handleDelete = (person) => {
-    // Create delete request to json server
     if (window.confirm(`Delete: ${person.name} ?`)) {
       personService
         .deleteEntrie(person.id)
@@ -85,20 +84,27 @@ const App = () => {
     }
   }
 
-  const addName = (e) => { // Add http post  (create())
+  const addName = (e) => {
     e.preventDefault();
 
-    if (
-      persons.find((person) => person.name.trim() === newName.trim()) !==
-      undefined
-    ) {
-      alert(`${newName} is already added to phonebook`);
+    const currentPerson = persons.find((person) => person.name.trim() === newName.trim());
+    if (currentPerson !== undefined) {
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+        const newObject = {...currentPerson, number: newNumber};
+        personService
+          .update(currentPerson.id, newObject)
+          .then(returnedPerson => {
+            alert(`${newName}'s number was updated to ${newNumber}`);
+            setPersons(persons.map(person => person.id !== currentPerson.id ? person : returnedPerson))
+            setNewName("");
+            setNewNumber("");
+          })
+      }
     } else {
       const newNameObject = {
         name: newName,
         number: newNumber,
       };
-      // Add in .catch to handle errors with the server or bad requests
       personService
         .create(newNameObject)
         .then( newPerson => {
