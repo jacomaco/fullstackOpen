@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import personService from './services/persons';
+import Notification from './components/Notification';
 
 const Number = ({ person, onClick }) => {
   return (
@@ -56,6 +57,8 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [newSearch, setNewSearch] = useState("");
+  const [message, setMessage] = useState(null)
+  const [messagetype, setMessageType] = useState("success")
 
   useEffect(() => {
     personService
@@ -94,10 +97,23 @@ const App = () => {
         personService
           .update(currentPerson.id, newObject)
           .then(returnedPerson => {
-            alert(`${newName}'s number was updated to ${newNumber}`);
             setPersons(persons.map(person => person.id !== currentPerson.id ? person : returnedPerson))
             setNewName("");
             setNewNumber("");
+            setMessageType("success")
+            setMessage(`${newName}'s number was updated to ${newNumber}`)
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000);
+          }).catch(error => {
+            setNewName("")
+            setNewNumber("")
+            setMessageType("error")
+            setMessage(`Information of ${currentPerson.name} has already been removed from server`)
+            setPersons(persons.filter(person => person.id !== currentPerson.id))
+            setTimeout(() => {
+              setMessage(null)
+            }, 5000);
           })
       }
     } else {
@@ -111,6 +127,11 @@ const App = () => {
           setPersons(persons.concat(newPerson));
           setNewName("");
           setNewNumber("");
+          setMessageType("success")
+          setMessage(`${newName} was saved!`)
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000);
         })
     }
   };
@@ -118,6 +139,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} type={messagetype}/>
       <Filter handleSearchChange={handleSearchChange} newSearch={newSearch}/>
       <h2>add a new</h2>
       <PersonForm
