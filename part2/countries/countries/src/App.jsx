@@ -34,7 +34,7 @@ function App() {
   return (
     <>
     <Form value={searchTerm} handleChange={handleChange}/>
-    <Display mode={displayDetailedMode} names={names}/>
+    <Display searchResults={searchResults} names={names} searchTerm={searchTerm}/>
     </>
   )
 }
