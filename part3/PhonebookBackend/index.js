@@ -3,7 +3,7 @@ const app = express();
 
 app.use(express.json());
 
-const persons = [
+let persons = [
     { 
       "id": "1",
       "name": "Arto Hellas", 
@@ -50,6 +50,48 @@ app.get('/info', (request, response) => {
         <p>${currentTime}</p>
     `)
 })
+
+// 3.4
+app.delete('/api/persons/:id', (request, response) => {
+  const id = request.params.id;
+  persons = persons.filter(person => person.id !== id);
+
+  response.status(204).end();
+})
+
+// 3.5
+app.post('/api/persons', (request, response) => {
+  const body = request.body;
+
+  if (!body.name || !body.number) {
+    return response.status(400).json({
+      error: 'name or number missing'
+    })
+  }
+  if (persons.find(person => person.name === body.name)) {
+    return response.status(400).json({
+      error: 'name must be unique'
+    })
+  } 
+  if (persons.find(person => person.number === body.number)) {
+    return response.status(400).json({
+      error: "number must not already be assigned to another person"
+    })
+  }
+
+  const entry = {
+    id: getRandomID(),
+    name: body.name,
+    number: body.number
+  }
+
+  persons = persons.concat(entry);
+  response.status(201).json(entry);
+})
+
+function getRandomID() {
+  return Math.floor(Math.random() * 1000000).toString();
+}
 
 const PORT = 3001;
 app.listen(PORT, () => {
