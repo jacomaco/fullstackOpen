@@ -26,8 +26,19 @@ const persons = [
     }
 ]
 
-app.get('/api/persons', (request, response) => {
-    response.json(persons)
+// 3.1
+app.get('/api/persons', (request, response) => response.json(persons));
+
+// 3.3
+app.get('/api/persons/:id', (request, response) => {
+  // find base of id
+  const id = request.params.id;
+  const person = persons.find(person => person.id === id);
+
+  if(!person) {
+    return response.status(404).end();
+  }
+  response.json(person);
 })
 
 // 3.2
