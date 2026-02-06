@@ -9,7 +9,7 @@
 }
 
 .added {
-    color: green;
+    color: rgb(2, 145, 2);
 }
 .errorMessage {
     color: red;
