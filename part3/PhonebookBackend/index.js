@@ -100,7 +100,7 @@ function getRandomID() {
   return Math.floor(Math.random() * 1000000).toString();
 }
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 })
