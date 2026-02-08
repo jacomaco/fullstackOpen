@@ -1,69 +1,77 @@
+require('dotenv').config();
 const express = require('express');
 const morgan = require('morgan');
+const Person = require('./models/person');
 
 
 morgan.token('body', (req) => req.method === 'POST' ? JSON.stringify(req.body) : '')
 
 const app = express();
-
-app.use(express.json());
 app.use(express.static('dist'));
+app.use(express.json());
 app.use(morgan(':method :url :status :res[content-length] :response-time ms :body'));
 
-let persons = [
-    { 
-      "id": "1",
-      "name": "Arto Hellas", 
-      "number": "040-123456"
-    },
-    { 
-      "id": "2",
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
-    },
-    { 
-      "id": "3",
-      "name": "Dan Abramov", 
-      "number": "12-43-234345"
-    },
-    { 
-      "id": "4",
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
-    }
-]
+// let persons = [
+//     { 
+//       "id": "1",
+//       "name": "Arto Hellas", 
+//       "number": "040-123456"
+//     },
+//     { 
+//       "id": "2",
+//       "name": "Ada Lovelace", 
+//       "number": "39-44-5323523"
+//     },
+//     { 
+//       "id": "3",
+//       "name": "Dan Abramov", 
+//       "number": "12-43-234345"
+//     },
+//     { 
+//       "id": "4",
+//       "name": "Mary Poppendieck", 
+//       "number": "39-23-6423122"
+//     }
+// ]
 
 // 3.1
-app.get('/api/persons', (request, response) => response.json(persons));
+app.get('/api/persons', (request, response) => {
+  Person.find({}).then(person => {
+    response.json(person)
+  })
+});
 
 // 3.3
 app.get('/api/persons/:id', (request, response) => {
-  // find base of id
   const id = request.params.id;
-  const person = persons.find(person => person.id === id);
-
-  if(!person) {
-    return response.status(404).end();
-  }
-  response.json(person);
+  Person.findById(id).then(person => {
+    response.json(person);
+  }).catch(err => {
+    response.status(404).end();
+  })
 })
 
 // 3.2
 app.get('/info', (request, response) => {
-    const numberOfPeople = persons.length;
     const currentTime = new Date();
-    response.send(`
+    Person.countDocuments({}).then(numberOfPeople => {
+      response.send(`
         <p>Phonebook has info for ${numberOfPeople} people</p>
         <p>${currentTime}</p>
-    `)
+      `)
+    })
 })
 
 // 3.4
 app.delete('/api/persons/:id', (request, response) => {
-  const id = request.params.id;
-  persons = persons.filter(person => person.id !== id);
-
-  response.status(204).end();
+  Person.findByIdAndDelete(request.params.id)
+    .then(result => response.status(204).end())
+    .catch(error => {
+      console.log(error);
+      response.status(400).send({
+        error: 'malformatted id'
+      })
+    })
 })
 
 // 3.5
@@ -86,14 +94,13 @@ app.post('/api/persons', (request, response) => {
     })
   }
 
-  const entry = {
-    id: getRandomID(),
+  const newPerson = new Person({
     name: body.name,
-    number: body.number
-  }
-
-  persons = persons.concat(entry);
-  response.status(201).json(entry);
+    number: body.number,
+  })
+  newPerson.save().then(result => {
+    response.status(201).json(result);
+  })
 })
 
 function getRandomID() {

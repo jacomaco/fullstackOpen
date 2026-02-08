@@ -1,8 +1,9 @@
+require('dotenv').config();
 const express = require('express');
+const Note = require('./models/note')
+
+
 const app = express();
-
-
-
 // pre middleware
 const requestLogger = (request, response, next) => {
   console.log('Method: ', request.method);
@@ -38,18 +39,23 @@ app.get('/', (request, response) => {
 })
 
 app.get('/api/notes', (request, response) => {
-    response.json(notes)
+    Note.find({}).then(notes => {
+      response.json(notes)
+    })
 })
 
 app.get('/api/notes/:id', (request, response) => {
   const id = request.params.id
-  const note = notes.find(note => note.id === id);
-  if (note) {
-    response.json(note);
-  } else {
-    response.statusMessage = "this note does not exist in the databse"
-    response.status(404).end();
-  }
+  Note.findById(id).then(note => {
+    response.json(note)
+  })
+  // const note = notes.find(note => note.id === id);
+  // if (note) {
+  //   response.json(note);
+  // } else {
+  //   response.statusMessage = "this note does not exist in the databse"
+  //   response.status(404).end();
+  // }
 })
 
 app.delete('/api/notes/:id', (request, response) => {
@@ -72,14 +78,14 @@ app.post('/api/notes', (request, response) => {
     })
   }
 
-  const note = {
+  const note = new Note( {
     content: body.content,
     important: body.important || false,
-    id: generateId(),
-  }
+  })
 
-  notes = notes.concat(note);
-  response.json(note)
+  note.save().then(savedNote => {
+    response.json(savedNote)
+  })
 })
 
 const unknownEndpoint = (request, response) => {
@@ -88,7 +94,7 @@ const unknownEndpoint = (request, response) => {
 
 app.use(unknownEndpoint);
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT // || 3001;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);  
 })
