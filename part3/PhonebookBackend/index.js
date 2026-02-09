@@ -42,13 +42,11 @@ app.get('/api/persons', (request, response) => {
 });
 
 // 3.3
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
   const id = request.params.id;
-  Person.findById(id).then(person => {
-    response.json(person);
-  }).catch(err => {
-    response.status(404).end();
-  })
+  Person.findById(id)
+    .then(person => response.json(person))
+    .catch(error => next(error))
 })
 
 // 3.2
@@ -63,36 +61,31 @@ app.get('/info', (request, response) => {
 })
 
 // 3.4
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
     .then(result => response.status(204).end())
-    .catch(error => {
-      console.log(error);
-      response.status(400).send({
-        error: 'malformatted id'
-      })
-    })
+    .catch(error => next(error))
 })
 
 // 3.5
 app.post('/api/persons', (request, response) => {
   const body = request.body;
 
-  if (!body.name || !body.number) {
-    return response.status(400).json({
-      error: 'name or number missing'
-    })
-  }
-  if (persons.find(person => person.name === body.name)) {
-    return response.status(400).json({
-      error: 'name must be unique'
-    })
-  } 
-  if (persons.find(person => person.number === body.number)) {
-    return response.status(400).json({
-      error: "number must not already be assigned to another person"
-    })
-  }
+  // if (!body.name || !body.number) {
+  //   return response.status(400).json({
+  //     error: 'name or number missing'
+  //   })
+  // }
+  // if (persons.find(person => person.name === body.name)) {
+  //   return response.status(400).json({
+  //     error: 'name must be unique'
+  //   })
+  // } 
+  // if (persons.find(person => person.number === body.number)) {
+  //   return response.status(400).json({
+  //     error: "number must not already be assigned to another person"
+  //   })
+  // }
 
   const newPerson = new Person({
     name: body.name,
@@ -103,9 +96,23 @@ app.post('/api/persons', (request, response) => {
   })
 })
 
-function getRandomID() {
-  return Math.floor(Math.random() * 1000000).toString();
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
 }
+app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.name)
+  console.log("---");
+  console.error(error.message);
+  
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+  
+  next(error)
+}
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
