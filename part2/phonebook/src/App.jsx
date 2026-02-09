@@ -133,6 +133,16 @@ const App = () => {
             setMessage(null)
           }, 5000);
         })
+        .catch(error => {
+          setNewName("");
+          setNewNumber("");
+          setMessageType("error");
+          setMessage(error.response.data.error)
+          console.log(error.response.data.error);
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000);
+        })
     }
   };
 
