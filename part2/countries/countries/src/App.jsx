@@ -1,21 +1,19 @@
 import { useState, useEffect } from 'react'
 import Form from './components/Form';
 import Display from './components/Display';
-import Info from './components/Info';
 import countriesService from './service/countriesService';
 
 const App = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [countries, setCountries] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
-  const [info, setInfo] = useState({});
+  const [info, setInfo] = useState([]);
 
   useEffect(() => {
     countriesService.getAllCountries().then(allCountries => {
       setCountries(allCountries.map(country => country.name.common));
       console.log(allCountries);
       setSearchResults(allCountries.map(country => country.name.common));
-      
     });
   }, []);
 
@@ -26,7 +24,7 @@ const App = () => {
         setInfo(country)
       })
     } else {
-      setInfo({})
+      setInfo([])
     }
   },[searchResults])
   
@@ -41,7 +39,6 @@ const App = () => {
     <div>
       <Form value={searchTerm} handleChange={handleSearchChange} />
       <Display searchResults={searchResults} info={info}/>
-      <Info />
     </div>
   );
 }
