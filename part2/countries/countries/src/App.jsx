@@ -1,42 +1,46 @@
 import { useState, useEffect } from 'react'
 import Form from './components/Form';
 import Display from './components/Display';
+import Info from './components/Info';
 import countriesService from './service/countriesService';
-function App() {
-  const [searchTerm, setSeachTerm] = useState("");
-  const [displayDetailedMode, setDetaildDisplayMode] = useState(false)
-  const [searchResults, setSearchResults] = useState();
-  const [names, setNames] = useState([])
+
+const App = () => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [countries, setCountries] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
-    // get all names
-    countriesService.getAllCountrieNames()
-      .then(response => {
-        setNames(response.map(response => response.name.common))
-        console.log(response.map(response => response.name.common)); // remove this line later
-        }
-      )
-  },[]) 
-
-  useEffect(() => {
-    if(searchResults && searchResults.length === 1) {
-      // make api call to fetch relevant info about country
-      console.log("deach");
+    countriesService.getAllCountries().then(allCountries => {
+      setCountries(allCountries.map(country => country.name.common));
+      console.log(allCountries);
+      setSearchResults(allCountries.map(country => country.name.common));
       
-    }
-  },[searchTerm])
+    });
+  }, []);
 
-  const handleChange = (event) => {
-    console.log(`value in ${searchTerm}`);
-    setSeachTerm(event.target.value)
-  }
+  useEffect(() => {
+    if (searchResults.length === 1) {
+      countriesService.getCountry(searchResults).then(country => {
+        console.log(country);
+      })
+    }
+
+  },[searchResults])
   
+  const handleSearchChange = (event) => {
+    const newSearchTerm = event.target.value;
+    setSearchTerm(newSearchTerm);
+    const results = countries.filter(country => country.toLowerCase().includes(newSearchTerm.toLowerCase()));
+    setSearchResults(results);
+  }
+
   return (
-    <>
-    <Form value={searchTerm} handleChange={handleChange}/>
-    <Display searchResults={searchResults} names={names} searchTerm={searchTerm}/>
-    </>
-  )
+    <div>
+      <Form value={searchTerm} handleChange={handleSearchChange} />
+      <Display searchResults={searchResults}/>
+      <Info />
+    </div>
+  );
 }
 
-export default App
+export default App;
