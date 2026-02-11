@@ -8,6 +8,7 @@ const App = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [countries, setCountries] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
+  const [info, setInfo] = useState({});
 
   useEffect(() => {
     countriesService.getAllCountries().then(allCountries => {
@@ -20,11 +21,13 @@ const App = () => {
 
   useEffect(() => {
     if (searchResults.length === 1) {
-      countriesService.getCountry(searchResults).then(country => {
+      countriesService.getCountry(searchResults[0]).then(country => {
         console.log(country);
+        setInfo(country)
       })
+    } else {
+      setInfo({})
     }
-
   },[searchResults])
   
   const handleSearchChange = (event) => {
@@ -37,7 +40,7 @@ const App = () => {
   return (
     <div>
       <Form value={searchTerm} handleChange={handleSearchChange} />
-      <Display searchResults={searchResults}/>
+      <Display searchResults={searchResults} info={info}/>
       <Info />
     </div>
   );

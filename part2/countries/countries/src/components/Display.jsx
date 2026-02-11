@@ -1,6 +1,12 @@
-const Display = ({ searchResults, }) => {
-    if (searchResults.length === 1) {
-        return <p>Country</p>;
+const Display = ({ searchResults, info }) => {
+    if (searchResults.length === 1 && info && info.name) {
+        console.log(info);
+        
+        return (
+            <div>
+                <h1>{info.name.common}</h1>
+            </div>
+        )
     }
     return (
         <ul>
