@@ -7,7 +7,8 @@ const App = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [countries, setCountries] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
-  const [info, setInfo] = useState([]);
+  const [info, setInfo] = useState(null);
+  const [weatherInfo, setWeatherInfo] = useState(null)
 
   useEffect(() => {
     countriesService.getAllCountries().then(allCountries => {
@@ -17,31 +18,53 @@ const App = () => {
     });
   }, []);
 
+  // useEffect(() => {
+  //   if (searchResults.length === 1) {
+  //     countriesService.getCountry(searchResults[0]).then(country => {
+  //       console.log(country);
+  //       setInfo(country)
+  //     })
+  //   } else {
+  //     setInfo(null)
+  //   }
+  // }, [searchResults])
+
   useEffect(() => {
-    if (searchResults.length === 1) {
-      countriesService.getCountry(searchResults[0]).then(country => {
-        console.log(country);
-        setInfo(country)
+  if (searchResults.length === 1) {
+    countriesService.getCountry(searchResults[0])
+      .then(country => {
+        setInfo(country);
+        // Anropa väder direkt med data från första svaret
+        return countriesService.getWeather(country.capital[0]);
       })
-    } else {
-      setInfo([])
-    }
-  },[searchResults])
-  
+      .then(weather => {
+        setWeatherInfo(weather);
+        console.log(weather.weather[0].id);
+        
+      })
+      .catch(err => console.log(err));
+  } else {
+    setInfo(null);
+    setWeatherInfo(null);
+  }
+}, [searchResults]);
+
   const handleSearchChange = (event) => {
-    const newSearchTerm = event.target.value;
-    setSearchTerm(newSearchTerm);
-    const results = countries.filter(country => country.toLowerCase().includes(newSearchTerm.toLowerCase()));
-    setSearchResults(results);
+    const term = event.target.value;
+    setSearchTerm(term);
+    const filtered = countries.filter(country => country.toLowerCase().includes(term.toLowerCase()));
+    setSearchResults(filtered);
   }
 
-  if (!countries) {
-    return null
-  }
+  if (!countries) return <div>Loading data...</div>
+
   return (
     <div>
       <Form value={searchTerm} handleChange={handleSearchChange} />
-      <Display searchResults={searchResults} setSearchResults={setSearchResults} info={info}/>
+      <Display
+        searchResults={searchResults}
+        setSearchResults={setSearchResults}
+        info={info || {}} />
     </div>
   );
 }
