@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 mongoose.set('strictQuery', false)
 const uri = process.env.MONGODB_URI
 
-console.log('Connecting to', uri)
+console.log('Connecting to MongoDB')
 mongoose
   .connect(uri, { family: 4 })
   .then(() => {

@@ -1,4 +1,10 @@
-const Display = ({ searchResults, info }) => {
+const Display = ({ searchResults, setSearchResults, info }) => {
+
+    const handleButtonPress = (name) => () => {
+        console.log(name);
+
+        setSearchResults([name])
+    }
     if (searchResults.length > 10) {
         return (
             <div>
@@ -6,27 +12,30 @@ const Display = ({ searchResults, info }) => {
             </div>
         )
     }
-    if (searchResults.length === 1 && !(Object.keys(info).length === 0)) {
-        console.log(typeof info);
-        
+    if (searchResults.length === 1 && Object.keys(info).length > 0) {
+        const { name, capital, area, languages, flags } = info
         return (
             <div>
-                <h1>{info.name.common}</h1>
-                <p>capital {info.capital?.[0]}</p>
-                <p>area {info.area}</p>
+                <h1>{name.common}</h1>
+                <p>capital {capital?.[0]}</p>
+                <p>area {area}</p>
                 <h3>languages:</h3>
                 <ul>
-                    {Object.values(info.languages).map(lang => (
+                    {Object.values(languages).map(lang => (
                         <li key={lang}>{lang}</li>
                     ))}
                 </ul>
-                <img src={info.flags.png} alt={info.flags.alt} />
+                <img src={flags.png} alt={flags.alt} />
             </div>
         )
     }
     return (
-        <ul>
-            {searchResults.map(name => <li key={name}>{name}</li>)}
+        <ul style={{ listStyle: 'none', padding: '0' }}>
+            {searchResults.map((name) => (
+                <li key={name} style={{ marginBottom: '5px' }}>
+                    {name} <button onClick={handleButtonPress(name)}>show</button>
+                </li>
+            ))}
         </ul>
     )
 }

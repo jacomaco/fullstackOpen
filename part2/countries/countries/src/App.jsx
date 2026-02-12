@@ -5,15 +5,15 @@ import countriesService from './service/countriesService';
 
 const App = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [countries, setCountries] = useState([]);
+  const [countries, setCountries] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
   const [info, setInfo] = useState([]);
 
   useEffect(() => {
     countriesService.getAllCountries().then(allCountries => {
-      setCountries(allCountries.map(country => country.name.common));
-      console.log(allCountries);
-      setSearchResults(allCountries.map(country => country.name.common));
+      const names = allCountries.map(country => country.name.common);
+      setCountries(names);
+      setSearchResults(names);
     });
   }, []);
 
@@ -35,10 +35,13 @@ const App = () => {
     setSearchResults(results);
   }
 
+  if (!countries) {
+    return null
+  }
   return (
     <div>
       <Form value={searchTerm} handleChange={handleSearchChange} />
-      <Display searchResults={searchResults} info={info}/>
+      <Display searchResults={searchResults} setSearchResults={setSearchResults} info={info}/>
     </div>
   );
 }
