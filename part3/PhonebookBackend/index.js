@@ -55,22 +55,6 @@ app.delete('/api/persons/:id', (request, response, next) => {
 app.post('/api/persons', (request, response, next) => {
   const body = request.body
 
-  // if (!body.name || !body.number) {
-  //   return response.status(400).json({
-  //     error: 'name or number missing'
-  //   })
-  // }
-  // if (persons.find(person => person.name === body.name)) {
-  //   return response.status(400).json({
-  //     error: 'name must be unique'
-  //   })
-  // }
-  // if (persons.find(person => person.number === body.number)) {
-  //   return response.status(400).json({
-  //     error: 'number must not already be assigned to another person'
-  //   })
-  // }
-
   const newPerson = new Person({
     name: body.name,
     number: body.number,
