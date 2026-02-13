@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Form from './components/Form';
 import Display from './components/Display';
 import countriesService from './service/countriesService';
+const api_key = import.meta.env.VITE_SOME_KEY
 
 const App = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -18,36 +19,22 @@ const App = () => {
     });
   }, []);
 
-  // useEffect(() => {
-  //   if (searchResults.length === 1) {
-  //     countriesService.getCountry(searchResults[0]).then(country => {
-  //       console.log(country);
-  //       setInfo(country)
-  //     })
-  //   } else {
-  //     setInfo(null)
-  //   }
-  // }, [searchResults])
-
   useEffect(() => {
-  if (searchResults.length === 1) {
-    countriesService.getCountry(searchResults[0])
-      .then(country => {
-        setInfo(country);
-        // Anropa väder direkt med data från första svaret
-        return countriesService.getWeather(country.capital[0]);
-      })
-      .then(weather => {
-        setWeatherInfo(weather);
-        console.log(weather.weather[0].id);
-        
-      })
-      .catch(err => console.log(err));
-  } else {
-    setInfo(null);
-    setWeatherInfo(null);
-  }
-}, [searchResults]);
+    if (searchResults.length === 1) {
+      countriesService.getCountry(searchResults[0])
+        .then(country => {
+          setInfo(country);
+          return countriesService.getWeather(country.capital[0], api_key);
+        })
+        .then(weather => {
+          setWeatherInfo(weather);
+        })
+        .catch(err => console.log(err));
+    } else {
+      setInfo(null);
+      setWeatherInfo(null);
+    }
+  }, [searchResults]);
 
   const handleSearchChange = (event) => {
     const term = event.target.value;
@@ -64,7 +51,8 @@ const App = () => {
       <Display
         searchResults={searchResults}
         setSearchResults={setSearchResults}
-        info={info || {}} />
+        info={info || {}}
+        weather={weatherInfo} />
     </div>
   );
 }
