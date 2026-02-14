@@ -1,5 +1,5 @@
 {
-  "name": "lecturenotes",
+  "name": "notesbackend",
   "version": "1.0.0",
   "description": "testProject",
   "license": "ISC",
@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "node --watch index.js",
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --test",
     "lint": "eslint .",
     "build:ui": "rm -rf dist && cd ../notesFrontend && npm run build && cp -r dist ../notesBackend",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push"
