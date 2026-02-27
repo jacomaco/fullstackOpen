@@ -25,7 +25,7 @@ test('all blogs are returned', async () => {
   assert.strictEqual(response.body.length, helper.initialBlogs.length)
 })
 
-test.only('unique identifier is named id', async () => {
+test('unique identifier is named id', async () => {
   const response = await api
     .get('/api/blogs')
   
@@ -33,6 +33,27 @@ test.only('unique identifier is named id', async () => {
 
   assert.strictEqual(typeof firstBlog.id, 'string')
   assert.strictEqual(firstBlog._id, undefined)
+})
+
+test.only('post request successfully creates a new blog post', async () => {
+  const newBlog = {
+    title: "title1",
+    author: "author1",
+    url: "url1",
+    likes: 1
+  }
+
+  await api 
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const blogsEnd = await helper.blogsInDb()
+  assert.strictEqual(blogsEnd.length, helper.initialBlogs.length + 1)
+
+  const titles = blogsEnd.map(n => n.title)
+  assert(titles.includes('title1'))
 })
 
 after(async () => {
