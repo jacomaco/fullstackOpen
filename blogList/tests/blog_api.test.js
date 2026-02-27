@@ -28,14 +28,14 @@ test('all blogs are returned', async () => {
 test('unique identifier is named id', async () => {
   const response = await api
     .get('/api/blogs')
-  
+
   const firstBlog = response.body[0]
 
   assert.strictEqual(typeof firstBlog.id, 'string')
   assert.strictEqual(firstBlog._id, undefined)
 })
 
-test.only('post request successfully creates a new blog post', async () => {
+test('post request successfully creates a new blog post', async () => {
   const newBlog = {
     title: "title1",
     author: "author1",
@@ -43,7 +43,7 @@ test.only('post request successfully creates a new blog post', async () => {
     likes: 1
   }
 
-  await api 
+  await api
     .post('/api/blogs')
     .send(newBlog)
     .expect(201)
@@ -54,6 +54,24 @@ test.only('post request successfully creates a new blog post', async () => {
 
   const titles = blogsEnd.map(n => n.title)
   assert(titles.includes('title1'))
+})
+
+test.only('default to 0 if likes property is missing from the request', async () => {
+  const newBlog = {
+    title: "blogWithoutLikes",
+    author: "author2",
+    url: "url2",
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const blogsEnd = await helper.blogsInDb()
+  const blogWithoutLikes = blogsEnd.find(blog => blog.title === 'blogWithoutLikes')
+  assert.strictEqual(blogWithoutLikes.likes, 0)
 })
 
 after(async () => {
