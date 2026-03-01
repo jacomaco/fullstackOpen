@@ -56,7 +56,7 @@ test('post request successfully creates a new blog post', async () => {
   assert(titles.includes('title1'))
 })
 
-test.only('default to 0 if likes property is missing from the request', async () => {
+test('default to 0 if likes property is missing from the request', async () => {
   const newBlog = {
     title: "blogWithoutLikes",
     author: "author2",
@@ -72,6 +72,33 @@ test.only('default to 0 if likes property is missing from the request', async ()
   const blogsEnd = await helper.blogsInDb()
   const blogWithoutLikes = blogsEnd.find(blog => blog.title === 'blogWithoutLikes')
   assert.strictEqual(blogWithoutLikes.likes, 0)
+})
+
+test.only('request status code is 400 if title are missing from the request data', async () => {
+  const newBlogWithoutTitle = {
+    author: 'author3',
+    url: 'url3'
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlogWithoutTitle)
+    .expect(400)
+    .expect('Content-Type', /application\/json/)
+
+})
+
+test.only('request status code is 400 if url are missing from the request data', async () => {
+  const newBlogWithoutUrl = {
+    title: 'title4',
+    author: 'author 4'
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlogWithoutUrl)
+    .expect(400)
+    .expect('Content-Type', /application\/json/)
 })
 
 after(async () => {
