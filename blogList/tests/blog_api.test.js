@@ -74,7 +74,7 @@ test('default to 0 if likes property is missing from the request', async () => {
   assert.strictEqual(blogWithoutLikes.likes, 0)
 })
 
-test.only('request status code is 400 if title are missing from the request data', async () => {
+test('request status code is 400 if title are missing from the request data', async () => {
   const newBlogWithoutTitle = {
     author: 'author3',
     url: 'url3'
@@ -88,7 +88,7 @@ test.only('request status code is 400 if title are missing from the request data
 
 })
 
-test.only('request status code is 400 if url are missing from the request data', async () => {
+test('request status code is 400 if url are missing from the request data', async () => {
   const newBlogWithoutUrl = {
     title: 'title4',
     author: 'author 4'
@@ -99,6 +99,19 @@ test.only('request status code is 400 if url are missing from the request data',
     .send(newBlogWithoutUrl)
     .expect(400)
     .expect('Content-Type', /application\/json/)
+})
+
+test.only('deleteing a single blog post is successfull', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  const blogToDelete = blogsAtStart[0]
+
+  await api
+    .delete(`/api/blogs/${blogToDelete.id}`)
+    .expect(204)
+
+  const notesAtEnd = await helper.blogsInDb()
+  assert(!(notesAtEnd.find(note => note.id === blogToDelete.id)))
+  assert.strictEqual(notesAtEnd.length, blogsAtStart.length - 1)
 })
 
 after(async () => {
