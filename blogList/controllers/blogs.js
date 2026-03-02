@@ -32,7 +32,6 @@ blogsRouter.put('/:id', async (request, response) => {
     )
 
     updatedBlog ? response.json(updatedBlog) : response.status(404).end()
-
 })
 
 module.exports = blogsRouter

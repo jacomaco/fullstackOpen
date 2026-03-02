@@ -5,7 +5,6 @@ const supertest = require('supertest')
 const app = require('../app')
 const helper = require('./test_helper')
 const Blog = require('../models/blog')
-const { request } = require('node:http')
 
 const api = supertest(app)
 
@@ -115,7 +114,7 @@ test('deleteing a single blog post is successfull', async () => {
   assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1)
 })
 
-test.only('updating likes in a blog post is successful', async () => {
+test('updating likes in a blog post is successful', async () => {
   const blogsAtStart = await helper.blogsInDb()
   const blogToUpdate = blogsAtStart[0]
 
