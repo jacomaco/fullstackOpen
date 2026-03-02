@@ -5,6 +5,7 @@ const supertest = require('supertest')
 const app = require('../app')
 const helper = require('./test_helper')
 const Blog = require('../models/blog')
+const { request } = require('node:http')
 
 const api = supertest(app)
 
@@ -49,10 +50,10 @@ test('post request successfully creates a new blog post', async () => {
     .expect(201)
     .expect('Content-Type', /application\/json/)
 
-  const blogsEnd = await helper.blogsInDb()
-  assert.strictEqual(blogsEnd.length, helper.initialBlogs.length + 1)
+  const blogsAtEnd = await helper.blogsInDb()
+  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
 
-  const titles = blogsEnd.map(n => n.title)
+  const titles = blogsAtEnd.map(n => n.title)
   assert(titles.includes('title1'))
 })
 
@@ -69,8 +70,8 @@ test('default to 0 if likes property is missing from the request', async () => {
     .expect(201)
     .expect('Content-Type', /application\/json/)
 
-  const blogsEnd = await helper.blogsInDb()
-  const blogWithoutLikes = blogsEnd.find(blog => blog.title === 'blogWithoutLikes')
+  const blogsAtEnd = await helper.blogsInDb()
+  const blogWithoutLikes = blogsAtEnd.find(blog => blog.title === 'blogWithoutLikes')
   assert.strictEqual(blogWithoutLikes.likes, 0)
 })
 
@@ -101,7 +102,7 @@ test('request status code is 400 if url are missing from the request data', asyn
     .expect('Content-Type', /application\/json/)
 })
 
-test.only('deleteing a single blog post is successfull', async () => {
+test('deleteing a single blog post is successfull', async () => {
   const blogsAtStart = await helper.blogsInDb()
   const blogToDelete = blogsAtStart[0]
 
@@ -109,9 +110,32 @@ test.only('deleteing a single blog post is successfull', async () => {
     .delete(`/api/blogs/${blogToDelete.id}`)
     .expect(204)
 
-  const notesAtEnd = await helper.blogsInDb()
-  assert(!(notesAtEnd.find(note => note.id === blogToDelete.id)))
-  assert.strictEqual(notesAtEnd.length, blogsAtStart.length - 1)
+  const blogsAtEnd = await helper.blogsInDb()
+  assert(!(blogsAtEnd.find(blog => blog.id === blogToDelete.id)))
+  assert.strictEqual(blogsAtEnd.length, blogsAtStart.length - 1)
+})
+
+test.only('updating likes in a blog post is successful', async () => {
+  const blogsAtStart = await helper.blogsInDb()
+  const blogToUpdate = blogsAtStart[0]
+
+  const newLikes = {
+    likes: blogToUpdate.likes + 1
+  }
+
+  const response = await api
+    .put(`/api/blogs/${blogToUpdate.id}`)
+    .send(newLikes)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  assert.strictEqual(response.body.likes, blogToUpdate.likes + 1)
+
+  const blogsAtEnd = await helper.blogsInDb()
+  const updatedBlog = blogsAtEnd.find(blog => blog.id === blogToUpdate.id)
+
+  assert.strictEqual(updatedBlog.likes, blogToUpdate.likes + 1)
+  assert.strictEqual(blogsAtStart.length, blogsAtEnd.length)
 })
 
 after(async () => {
