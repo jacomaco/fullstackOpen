@@ -3,12 +3,26 @@ const usersRouter = require('express').Router()
 const User = require('../models/user')
 
 usersRouter.get('/', async (request, response) => {
-    const users = await User.find({})
+    const users = await User.find({}).populate('blogs', { url: 1, title: 1, author: 1 })
     response.json(users)
 })
 
 usersRouter.post('/', async (request, response) => {
     const { username, name, password } = request.body
+
+    if (username?.length < 3) {
+        return response.status(400).json({ error: 'username too short' });
+    }
+    if (password?.length < 3) {
+        return response.status(400).json({ error: 'password too short' });
+    }
+
+    const existingUser = await User.findOne({ username })
+    if (existingUser) {
+        return response.status(400).json({
+            error: 'expected `username` to be unique'
+        })
+    }
 
     const saltRounds = 10
     const passwordHash = await bcrypt.hash(password, saltRounds)
@@ -24,5 +38,3 @@ usersRouter.post('/', async (request, response) => {
 })
 
 module.exports = usersRouter
-
-// create get and post request for seeing and creating new users, make sure the store the password as a hash using bcrypt
