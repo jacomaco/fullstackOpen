@@ -1,7 +1,9 @@
 POST http://localhost:3001/api/notes/
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1sdXVra2FpIiwiaWQiOiI2OWE5NGQ4NGIzZTM2MWY5M2EwNjdhZmYiLCJpYXQiOjE3NzI3MTE2MjF9.Q07knpO90UUG3330pvKzJqL5troC6U2qml1gNi9BkTg
 
 {
-    "content": "Vs code rest client is a pretty handy tool",
-    "important": true
+    "content": "User id's of the note creator is at the start sent along the request",
+    "important": true,
+    "userId": "69a94d84b3e361f93a067aff"
 }
