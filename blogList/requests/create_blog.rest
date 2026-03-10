@@ -1,0 +1,9 @@
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+
+{
+  "title": "Testning av relationer",
+  "author": "Full Stack Open",
+  "url": "https://fullstackopen.com/",
+  "likes": 5
+}
