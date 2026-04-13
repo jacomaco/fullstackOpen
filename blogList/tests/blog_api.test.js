@@ -10,8 +10,15 @@ const Blog = require('../models/blog')
 
 const api = supertest(app)
 
+let tokenUser
 beforeEach(async () => {
   await Blog.deleteMany({})
+  await User.deleteMany({})
+
+  const passwordHash = await bcrypt.hash('sekret', 10)
+  const user = new User({ username: 'testuser', passwordHash })
+  tokenUser = await user.save()
+
   await Blog.insertMany(helper.initialBlogs)
 })
 
@@ -38,12 +45,14 @@ test('unique identifier is named id', async () => {
 })
 
 test('post request successfully creates a new blog post', async () => {
+
   const newBlog = {
-    title: "title1",
-    author: "author1",
-    url: "url1",
-    likes: 1
-  }
+      title: "title1",
+      author: "author1",
+      url: "url1",
+      likes: 1,
+      userId: tokenUser.id // Match the key the router expects
+    }
 
   await api
     .post('/api/blogs')
@@ -61,8 +70,8 @@ test('post request successfully creates a new blog post', async () => {
 test('default to 0 if likes property is missing from the request', async () => {
   const newBlog = {
     title: "blogWithoutLikes",
-    author: "author2",
     url: "url2",
+    userId: tokenUser.id
   }
 
   await api
@@ -207,7 +216,7 @@ describe('when there is initially one user in db', () => {
       .expect(400)
 
     assert.strictEqual(result.body.error, 'password too short')
-    
+
     const usersAtEnd = await helper.usersInDb()
     assert.strictEqual(usersAtEnd.length, usersAtStart.length)
   })
@@ -230,8 +239,8 @@ describe('when there is initially one user in db', () => {
 
     const usersAtEnd = await helper.usersInDb()
     assert.strictEqual(result.body.error, 'expected `username` to be unique')
-    
-    assert.strictEqual(usersAtEnd.length, usersAtStart.length)  
+
+    assert.strictEqual(usersAtEnd.length, usersAtStart.length)
   })
 })
 
