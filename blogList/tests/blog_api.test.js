@@ -7,19 +7,27 @@ const helper = require('./test_helper')
 const bcrypt = require('bcrypt')
 const User = require('../models/user')
 const Blog = require('../models/blog')
+const jwt = require('jsonwebtoken')
 
 const api = supertest(app)
 
-let tokenUser
+let token
 beforeEach(async () => {
   await Blog.deleteMany({})
   await User.deleteMany({})
 
   const passwordHash = await bcrypt.hash('sekret', 10)
   const user = new User({ username: 'testuser', passwordHash })
-  tokenUser = await user.save()
+  const savedUser = await user.save()
 
-  await Blog.insertMany(helper.initialBlogs)
+  const userForToken = {
+    username: savedUser.username,
+    id: savedUser._id,
+  }
+  token = jwt.sign(userForToken, process.env.SECRET)
+
+  const blogObjects = helper.initialBlogs.map(blog => ({ ...blog, user: savedUser._id }))
+  await Blog.insertMany(blogObjects)
 })
 
 test('blogs are returned as json', async () => {
@@ -45,37 +53,51 @@ test('unique identifier is named id', async () => {
 })
 
 test('post request successfully creates a new blog post', async () => {
-
+  const blogsAtStart = await helper.blogsInDb()
   const newBlog = {
       title: "title1",
       author: "author1",
       url: "url1",
-      likes: 1,
-      userId: tokenUser.id // Match the key the router expects
+      likes: 1
     }
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`) 
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
 
   const blogsAtEnd = await helper.blogsInDb()
-  assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
+  assert.strictEqual(blogsAtEnd.length, blogsAtStart.length + 1)
 
   const titles = blogsAtEnd.map(n => n.title)
   assert(titles.includes('title1'))
+})
+
+test('adding a blog fails with the proper status code 401 Unauthorized if a token is not provided', async () => {
+  const newBlog = {
+    title: "title2",
+    author: "author2",
+    url: "url2",
+    likes: 0
+  }  
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(401)
 })
 
 test('default to 0 if likes property is missing from the request', async () => {
   const newBlog = {
     title: "blogWithoutLikes",
     url: "url2",
-    userId: tokenUser.id
   }
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/)
@@ -93,6 +115,7 @@ test('request status code is 400 if title are missing from the request data', as
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(newBlogWithoutTitle)
     .expect(400)
     .expect('Content-Type', /application\/json/)
@@ -107,6 +130,7 @@ test('request status code is 400 if url are missing from the request data', asyn
 
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(newBlogWithoutUrl)
     .expect(400)
     .expect('Content-Type', /application\/json/)
@@ -118,6 +142,7 @@ test('deleteing a single blog post is successfull', async () => {
 
   await api
     .delete(`/api/blogs/${blogToDelete.id}`)
+    .set('Authorization', `Bearer ${token}`)
     .expect(204)
 
   const blogsAtEnd = await helper.blogsInDb()
@@ -147,6 +172,7 @@ test('updating likes in a blog post is successful', async () => {
   assert.strictEqual(updatedBlog.likes, blogToUpdate.likes + 1)
   assert.strictEqual(blogsAtStart.length, blogsAtEnd.length)
 })
+
 
 describe('when there is initially one user in db', () => {
   beforeEach(async () => {
@@ -180,7 +206,6 @@ describe('when there is initially one user in db', () => {
     assert(usernames.includes(newUser.username))
   })
 
-  // creation fails with invalid credentials
   test('creation fails with 400 if username is too short', async () => {
     const usersAtStart = await helper.usersInDb()
 
@@ -221,7 +246,6 @@ describe('when there is initially one user in db', () => {
     assert.strictEqual(usersAtEnd.length, usersAtStart.length)
   })
 
-  // username must be unique
   test('creation fails if username is not unique', async () => {
     const usersAtStart = await helper.usersInDb()
 
