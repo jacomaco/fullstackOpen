@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import CreateNewBlog from './components/CreateNewBlog'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -9,11 +10,8 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
-
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs)
-    )
+    blogService.getAll().then(blogs => setBlogs(blogs))
   }, [])
 
   useEffect(() => {
@@ -39,10 +37,18 @@ const App = () => {
       setPassword('')
     } catch (error) {
       alert('wrong credentials')
-      console.error(error)
       setTimeout(() => {
 
       }, 5000);
+    }
+  }
+
+  const handleCreateBlog = async (blogObject) => {
+    try {
+      const returnedBlog = await blogService.createBlog(blogObject)
+      setBlogs([...blogs, returnedBlog])
+    } catch(error) {
+      alert('Error creating blog')
     }
   }
 
@@ -86,6 +92,7 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       <p>{user.name} logged in<button onClick={handleLogout}>Logout</button></p>
+      <CreateNewBlog handleCreateBlog={handleCreateBlog} />
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
