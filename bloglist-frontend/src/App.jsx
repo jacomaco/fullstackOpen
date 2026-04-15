@@ -3,12 +3,14 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import CreateNewBlog from './components/CreateNewBlog'
+import Notification from './components/Notification'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [notification, setNotification] = useState({ message: null, type: null })
 
   useEffect(() => {
     blogService.getAll().then(blogs => setBlogs(blogs))
@@ -36,9 +38,12 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (error) {
-      alert('wrong credentials')
+      setNotification({
+        message: 'Wrong username or password',
+        type: 'error',
+      })
       setTimeout(() => {
-
+        setNotification({ message: null, type: null })
       }, 5000);
     }
   }
@@ -47,8 +52,21 @@ const App = () => {
     try {
       const returnedBlog = await blogService.createBlog(blogObject)
       setBlogs([...blogs, returnedBlog])
-    } catch(error) {
-      alert('Error creating blog')
+      setNotification({
+        message: `a new blog ${blogObject.title} added`,
+        type: 'success'
+      })
+      setTimeout(() => {
+        setNotification({ message: null, type: null })
+      }, 5000);
+    } catch (error) {
+      setNotification({
+        message: 'A new blog was not created',
+        type: 'error'
+      })
+      setTimeout(() => {
+        setNotification({ message: null, type: null })
+      }, 5000);
     }
   }
 
@@ -62,6 +80,7 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
+        <Notification message={notification.message} type={notification.type} />
         <form onSubmit={handleLogin}>
           <div>
             <label>
@@ -91,6 +110,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
+      <Notification message={notification.message} type={notification.type} />
       <p>{user.name} logged in<button onClick={handleLogout}>Logout</button></p>
       <CreateNewBlog handleCreateBlog={handleCreateBlog} />
       {blogs.map(blog =>
