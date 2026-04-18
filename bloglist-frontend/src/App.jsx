@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import CreateNewBlog from './components/CreateNewBlog'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -11,6 +12,8 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [notification, setNotification] = useState({ message: null, type: null })
+
+  const blogRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs => setBlogs(blogs))
@@ -27,7 +30,7 @@ const App = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    console.log('logging in with', username, password)
+    console.log('logging in with', username, password) // might want to remove for production apps
     try {
       const user = await loginService.login({ username, password })
       window.localStorage.setItem(
@@ -37,7 +40,7 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
-    } catch (error) {
+    } catch {
       setNotification({
         message: 'Wrong username or password',
         type: 'error',
@@ -51,6 +54,7 @@ const App = () => {
   const handleCreateBlog = async (blogObject) => {
     try {
       const returnedBlog = await blogService.createBlog(blogObject)
+      blogRef.current.toggleVisibility()
       setBlogs([...blogs, returnedBlog])
       setNotification({
         message: `a new blog ${blogObject.title} added`,
@@ -59,7 +63,7 @@ const App = () => {
       setTimeout(() => {
         setNotification({ message: null, type: null })
       }, 5000);
-    } catch (error) {
+    } catch {
       setNotification({
         message: 'A new blog was not created',
         type: 'error'
@@ -69,6 +73,7 @@ const App = () => {
       }, 5000);
     }
   }
+
 
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogappuser')
@@ -112,7 +117,9 @@ const App = () => {
       <h2>blogs</h2>
       <Notification message={notification.message} type={notification.type} />
       <p>{user.name} logged in<button onClick={handleLogout}>Logout</button></p>
-      <CreateNewBlog handleCreateBlog={handleCreateBlog} />
+      <Togglable buttonLabel={'create new Blog'} ref={blogRef}>
+        <CreateNewBlog handleCreateBlog={handleCreateBlog} />
+      </Togglable>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
