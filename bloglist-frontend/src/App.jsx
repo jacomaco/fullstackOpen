@@ -74,6 +74,29 @@ const App = () => {
     }
   }
 
+  const incrementLikes = async (blogObject) => {
+    console.log('log');
+    
+    const incrementedBlog = {
+      ...blogObject,
+      likes: blogObject.likes + 1,
+      user: blogObject.user.id
+    }
+    try {
+      const returnedBlog = await blogService.update(incrementedBlog)
+      console.log(returnedBlog);
+      
+      setBlogs(blogs.map(blog => blog.id !== blogObject.id ? blog : returnedBlog))
+    } catch {
+      setNotification({
+        message: 'Likes was not updated',
+        type: 'error'
+      })
+      setTimeout(() => {
+        setNotification({ message: null, type: null })
+      }, 5000);
+    }
+  }
 
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogappuser')
@@ -121,7 +144,7 @@ const App = () => {
         <CreateNewBlog handleCreateBlog={handleCreateBlog} />
       </Togglable>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} incrementLikes={incrementLikes}/>
       )}
 
     </div>

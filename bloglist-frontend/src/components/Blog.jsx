@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, incrementLikes }) => {
   const [showDetails, setShowDetails] = useState(false)
 
   const simpleView = () => (
@@ -18,7 +18,7 @@ const Blog = ({ blog }) => {
         <a href={blog.url}>{blog.url}</a>
       </div>
       <div>
-        likes {blog.likes} <button>like</button>
+        likes: {blog.likes} <button onClick={() => incrementLikes(blog)}>like</button>
       </div>
       <div>{blog.user.username}</div>
     </>
