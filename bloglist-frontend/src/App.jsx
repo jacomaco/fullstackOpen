@@ -87,11 +87,16 @@ const App = () => {
         setTimeout(() => {
           setNotification({ message: null, type: null })
         }, 5000);
-      } catch {
-        setNotification({
-          message: `${blogObject.title} was not deleted`,
-          type: 'error'
-        })
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          setNotification({ message: 'Session expired, please log in again', type: 'error' })
+          handleLogout() // Rensa state och localStorage
+        } else {
+          setNotification({
+            message: `${blogObject.title} was not deleted`,
+            type: 'error'
+          })
+        }
         setTimeout(() => {
           setNotification({ message: null, type: null })
         }, 5000);
