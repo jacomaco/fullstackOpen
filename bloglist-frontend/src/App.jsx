@@ -47,7 +47,7 @@ const App = () => {
       })
       setTimeout(() => {
         setNotification({ message: null, type: null })
-      }, 5000);
+      }, 5000)
     }
   }
 
@@ -62,7 +62,7 @@ const App = () => {
       })
       setTimeout(() => {
         setNotification({ message: null, type: null })
-      }, 5000);
+      }, 5000)
     } catch {
       setNotification({
         message: 'A new blog was not created',
@@ -70,7 +70,7 @@ const App = () => {
       })
       setTimeout(() => {
         setNotification({ message: null, type: null })
-      }, 5000);
+      }, 5000)
     }
   }
 
@@ -78,7 +78,6 @@ const App = () => {
     if (window.confirm(`Remove blog ${blogObject.title} by ${blogObject.author}?`)) {
       try {
         await blogService.deleteBlog(blogObject)
-        // blogRef.current.toggleVisibility()
         setBlogs(blogs.filter(blog => blog.id !== blogObject.id))
         setNotification({
           message: `${blogObject.title} was deleted successfully`,
@@ -86,11 +85,11 @@ const App = () => {
         })
         setTimeout(() => {
           setNotification({ message: null, type: null })
-        }, 5000);
+        }, 5000)
       } catch (error) {
         if (error.response && error.response.status === 401) {
           setNotification({ message: 'Session expired, please log in again', type: 'error' })
-          handleLogout() // Rensa state och localStorage
+          handleLogout()
         } else {
           setNotification({
             message: `${blogObject.title} was not deleted`,
@@ -99,24 +98,21 @@ const App = () => {
         }
         setTimeout(() => {
           setNotification({ message: null, type: null })
-        }, 5000);
+        }, 5000)
       }
     }
 
   }
 
   const incrementLikes = async (blogObject) => {
-    console.log('log');
-
     const incrementedBlog = {
       ...blogObject,
       likes: blogObject.likes + 1,
       user: blogObject.user.id
     }
+
     try {
       const returnedBlog = await blogService.update(incrementedBlog)
-      console.log(returnedBlog);
-
       setBlogs(blogs.map(blog => blog.id !== blogObject.id ? blog : returnedBlog))
     } catch {
       setNotification({
@@ -125,7 +121,7 @@ const App = () => {
       })
       setTimeout(() => {
         setNotification({ message: null, type: null })
-      }, 5000);
+      }, 5000)
     }
   }
 
