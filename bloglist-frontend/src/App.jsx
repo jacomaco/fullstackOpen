@@ -74,9 +74,35 @@ const App = () => {
     }
   }
 
+  const handleDeleteBlog = async (blogObject) => {
+    if (window.confirm(`Remove blog ${blogObject.title} by ${blogObject.author}?`)) {
+      try {
+        await blogService.deleteBlog(blogObject)
+        // blogRef.current.toggleVisibility()
+        setBlogs(blogs.filter(blog => blog.id !== blogObject.id))
+        setNotification({
+          message: `${blogObject.title} was deleted successfully`,
+          type: 'success'
+        })
+        setTimeout(() => {
+          setNotification({ message: null, type: null })
+        }, 5000);
+      } catch {
+        setNotification({
+          message: `${blogObject.title} was not deleted`,
+          type: 'error'
+        })
+        setTimeout(() => {
+          setNotification({ message: null, type: null })
+        }, 5000);
+      }
+    }
+
+  }
+
   const incrementLikes = async (blogObject) => {
     console.log('log');
-    
+
     const incrementedBlog = {
       ...blogObject,
       likes: blogObject.likes + 1,
@@ -85,7 +111,7 @@ const App = () => {
     try {
       const returnedBlog = await blogService.update(incrementedBlog)
       console.log(returnedBlog);
-      
+
       setBlogs(blogs.map(blog => blog.id !== blogObject.id ? blog : returnedBlog))
     } catch {
       setNotification({
@@ -129,7 +155,7 @@ const App = () => {
                 onChange={({ target }) => setPassword(target.value)} />
             </label>
           </div>
-          <button type="submit">login</button>
+          <button className='button-1' type="submit">login</button>
         </form>
       </div>
     )
@@ -139,12 +165,12 @@ const App = () => {
     <div>
       <h2>blogs</h2>
       <Notification message={notification.message} type={notification.type} />
-      <p>{user.name} logged in<button onClick={handleLogout}>Logout</button></p>
+      <p>{user.name} logged in<button className='button-1' onClick={handleLogout}>Logout</button></p>
       <Togglable buttonLabel={'create new Blog'} ref={blogRef}>
         <CreateNewBlog handleCreateBlog={handleCreateBlog} />
       </Togglable>
       {[...blogs].sort((a, b) => b.likes - a.likes).map(blog =>
-        <Blog key={blog.id} blog={blog} incrementLikes={incrementLikes}/>
+        <Blog key={blog.id} user={user} blog={blog} incrementLikes={incrementLikes} deleteBlog={handleDeleteBlog} />
       )}
 
     </div>
