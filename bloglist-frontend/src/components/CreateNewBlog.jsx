@@ -19,13 +19,13 @@ const CreateNewBlog = ({ handleCreateBlog }) => {
       <h2>Create New</h2>
       <form onSubmit={addBlog}>
         <div>
-          title: <input type='text' value={title} onChange={({ target }) => setTitle(target.value)} />
+          title: <input placeholder='title' type='text' value={title} onChange={({ target }) => setTitle(target.value)} />
         </div>
         <div>
-          author: <input type='text' value={author} onChange={({ target }) => setAuthor(target.value)} />
+          author: <input placeholder='author' type='text' value={author} onChange={({ target }) => setAuthor(target.value)} />
         </div>
         <div>
-          url: <input type='text' value={url} onChange={({ target }) => setUrl(target.value)} />
+          url: <input placeholder='url' type='text' value={url} onChange={({ target }) => setUrl(target.value)} />
         </div>
         <button type='submit' className='button-1'>create</button>
       </form>
