@@ -1,0 +1,3 @@
+I added used distrobox with ubuntu in order to run playwright. Guide: https://samuelplumppu.se/blog/install-playwright-on-linux-with-distrobox
+use this command to enter the ubuntu environment: `distorbox enter ubunto`
+use this command to run tests: `npx playwrigt test` with optional flag --ui to open the gui
