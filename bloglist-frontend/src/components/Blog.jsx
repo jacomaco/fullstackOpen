@@ -37,7 +37,12 @@ const Blog = ({ user, blog, incrementLikes, deleteBlog }) => {
     setShowDetails(!showDetails)
   }
 
-  const showDeleteButton = blog.user?.username === user?.username
+  // const showDeleteButton = blog.user?.username === user?.username
+  // Kontrollera om username matchar ELLER om det inkommande user-fältet är den inloggade användarens ID
+  const showDeleteButton =
+    blog.user?.username === user?.username ||
+    blog.user === user?.id ||
+    blog.user?.id === user?.id
   return (
     <div className='blogStyle'>
       {showDetails ? detailedView() : simpleView()}

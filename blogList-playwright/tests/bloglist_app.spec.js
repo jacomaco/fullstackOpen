@@ -60,10 +60,26 @@ describe('Blog app', () => {
         author: 'testAuthor',
         url: 'testUrl'
       })
-      const blogDiv = page.locator('.blogStyle').filter({ hasText: 'testTitle'} )
+      const blogDiv = page.locator('.blogStyle').filter({ hasText: 'testTitle' })
       await blogDiv.getByRole('button', { name: /view/i }).click()
-      await blogDiv.getByRole('button', { name: /like/i}).click()
+      await blogDiv.getByRole('button', { name: /like/i }).click()
       await expect(blogDiv).toContainText('likes: 1')
+    })
+    
+    test('a user can delete a blogpost', async ({ page }) => {
+      await createBlog(page, {
+        title: 'testTitle',
+        author: 'testAuthor',
+        url: 'testUrl',
+      })
+      const blogDiv = page.locator('.blogStyle').filter({ hasText: 'testTitle' })
+      await blogDiv.getByRole('button', { name: /view/i }).click()
+      page.on('dialog', async dialog => {
+        await dialog.accept()
+      })
+      await blogDiv.getByRole('button', { name: 'delete' }).click()
+      await expect(page.getByText(/testTitle was deleted successfully/i)).toBeVisible()
+      await expect(page.getByText('testTitle testAuthor')).not.toBeVisible()
     })
   })
 })
