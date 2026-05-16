@@ -42,7 +42,7 @@ describe('Blog app', () => {
     beforeEach(async ({ page }) => {
       await loginWith(page, 'mluukkai', 'salainen')
     })
-    
+
     test('a new blog can be created', async ({ page }) => {
       await createBlog(page, {
         title: 'testTitle',
@@ -52,6 +52,18 @@ describe('Blog app', () => {
       await expect(page.getByText('testTitle testAuthor view')).toBeVisible()
       await expect(page.getByText('a new blog testTitle added')).toBeVisible()
       await expect(page.getByRole('button', { name: 'view' })).toBeVisible()
+    })
+
+    test('a blog can be liked', async ({ page }) => {
+      await createBlog(page, {
+        title: 'testTitle',
+        author: 'testAuthor',
+        url: 'testUrl'
+      })
+      const blogDiv = page.locator('.blogStyle').filter({ hasText: 'testTitle'} )
+      await blogDiv.getByRole('button', { name: /view/i }).click()
+      await blogDiv.getByRole('button', { name: /like/i}).click()
+      await expect(blogDiv).toContainText('likes: 1')
     })
   })
 })

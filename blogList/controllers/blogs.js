@@ -59,9 +59,11 @@ blogsRouter.put('/:id', async (request, response) => {
         author,
         url,
         likes,
-        user: user.id || user
+        // Om user är ett objekt (från en populering), ta user.id. 
+        // Om det redan är en sträng (som från incrementLikes), använd den direkt.
+        user: user && typeof user === 'object' ? user.id : user
     }
-    
+
     const updatedBlog = await Blog.findByIdAndUpdate(
         request.params.id,
         blog,
