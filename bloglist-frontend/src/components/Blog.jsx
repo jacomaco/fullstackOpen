@@ -38,7 +38,7 @@ const Blog = ({ user, blog, incrementLikes, deleteBlog }) => {
   }
 
   // const showDeleteButton = blog.user?.username === user?.username
-  // Kontrollera om username matchar ELLER om det inkommande user-fältet är den inloggade användarens ID
+  // Kontrollera om username matchar, eller om det inkommande user-fältet är den inloggade användarens ID
   const showDeleteButton =
     blog.user?.username === user?.username ||
     blog.user === user?.id ||

@@ -19,7 +19,6 @@ describe('Blog app', () => {
     await expect(page.getByLabel('username')).toBeVisible()
     await expect(page.getByLabel('password')).toBeVisible()
     await expect(page.getByText('Log in to application')).toBeVisible()
-    // ...
   })
 
   describe('login', () => {
@@ -98,13 +97,38 @@ describe('Blog app', () => {
 
       await page.getByRole('button', { name: /Logout/i }).click()
       await page.reload()
-      
+
       await loginWith(page, 'deleteUsername', 'deletePassword')
 
       const blogDiv = page.locator('.blogStyle').filter({ hasText: 'testTitle' })
       await blogDiv.getByRole('button', { name: /view/i }).click()
 
       await expect(blogDiv.getByRole('button', { name: 'delete' })).not.toBeVisible()
+    })
+
+    test('the blogposts should be sorted by numer of likes in decending order', async ({ page }) => {
+      const numberOfBlogs = 3
+      for (let i = 1; i <= numberOfBlogs; i++) {
+        await createBlog(page, { title: `title${i}`, author: `author${i}`, url: `url${i}` })
+      }
+
+      for (let i = 1; i <= numberOfBlogs; i++) {
+        const blogDiv = page.locator('.blogStyle').filter({ hasText: `title${i}` })
+        await blogDiv.getByRole('button', { name: /view/i }).click()
+      }
+
+      for (let i = 1; i <= numberOfBlogs; i++) {
+        const blogDiv = page.locator('.blogStyle').filter({ hasText: `title${i}` })
+        for (let j = 0; j < i; j++) {
+          await blogDiv.getByRole('button', { name: /like/i }).click()
+          await expect(blogDiv).toContainText(`likes: ${j + 1}`)
+        }
+      }
+
+      const blogDivs = page.locator('.blogStyle')
+      await expect(blogDivs.nth(0)).toContainText('title3')
+      await expect(blogDivs.nth(1)).toContainText('title2')
+      await expect(blogDivs.nth(2)).toContainText('title1')
     })
   })
 })
