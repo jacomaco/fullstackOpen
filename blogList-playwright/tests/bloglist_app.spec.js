@@ -65,7 +65,7 @@ describe('Blog app', () => {
       await blogDiv.getByRole('button', { name: /like/i }).click()
       await expect(blogDiv).toContainText('likes: 1')
     })
-    
+
     test('a user can delete a blogpost', async ({ page }) => {
       await createBlog(page, {
         title: 'testTitle',
@@ -80,6 +80,31 @@ describe('Blog app', () => {
       await blogDiv.getByRole('button', { name: 'delete' }).click()
       await expect(page.getByText(/testTitle was deleted successfully/i)).toBeVisible()
       await expect(page.getByText('testTitle testAuthor')).not.toBeVisible()
+    })
+
+    test('only the user that created a blog can se the blogs delete buttron', async ({ page, request }) => {
+      await request.post('/api/users', {
+        data: {
+          name: 'deleteUser',
+          username: 'deleteUsername',
+          password: 'deletePassword'
+        }
+      })
+      await createBlog(page, {
+        title: 'testTitle',
+        author: 'testAuthor',
+        url: 'testUrl',
+      })
+
+      await page.getByRole('button', { name: /Logout/i }).click()
+      await page.reload()
+      
+      await loginWith(page, 'deleteUsername', 'deletePassword')
+
+      const blogDiv = page.locator('.blogStyle').filter({ hasText: 'testTitle' })
+      await blogDiv.getByRole('button', { name: /view/i }).click()
+
+      await expect(blogDiv.getByRole('button', { name: 'delete' })).not.toBeVisible()
     })
   })
 })
