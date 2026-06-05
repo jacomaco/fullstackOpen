@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Routes, Route, Link, useNavigate } from 'react-router-dom'
+import { Routes, Route, Link, useNavigate, useMatch } from 'react-router-dom'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -7,6 +7,7 @@ import loginService from './services/login'
 import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
 import BlogList from './components/BlogList'
+import BlogPost from './components/BlogPost'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -72,6 +73,7 @@ const App = () => {
           message: `${blogObject.title} was deleted successfully`,
           type: 'success',
         })
+        navigate('/')
         setTimeout(() => setNotification({ message: null, type: null }), 5000)
       } catch (error) {
         if (error.response && error.response.status === 401) {
@@ -107,12 +109,18 @@ const App = () => {
     navigate('/')
   }
 
+  const match = useMatch('/blogs/:id')
+  
+  const blog = match
+    ? blogs.find(blog => blog.id === match.params.id)
+    : null
+
   const padding = { padding: 5 }
 
   return (
     <div>
       {/* Navigation */}
-      <div style={{ padding, backgroundColor: '#eee', marginBottom: 10 }}>
+      <div style={{ padding }}>
         <Link style={padding} to="/">blogs</Link>
         {user ? (
           <span style={padding}>
@@ -124,18 +132,24 @@ const App = () => {
         )}
       </div>
 
-      <h2>Blog App</h2>
       <Notification message={notification.message} type={notification.type} />
 
       <Routes>
+        <Route path="/blogs/:id" element={
+          <BlogPost 
+            blog={blog}
+            user={user}
+            incrementLikes={incrementLikes}
+            deleteBlog={handleDeleteBlog}
+          />
+        } />
+
         <Route path="/" element={
           <BlogList 
             blogs={blogs}
             user={user}
             blogRef={blogRef}
             handleCreateBlog={handleCreateBlog}
-            incrementLikes={incrementLikes}
-            deleteBlog={handleDeleteBlog}
           />
         } />
         

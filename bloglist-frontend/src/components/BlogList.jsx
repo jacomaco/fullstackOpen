@@ -7,11 +7,10 @@ const BlogList = ({
   user, 
   blogRef, 
   handleCreateBlog, 
-  incrementLikes, 
-  deleteBlog 
 }) => {
   return (
     <div>
+      <h1>Blogs</h1>
       {user && (
         <Togglable buttonLabel='create new Blog' ref={blogRef}>
           <CreateNewBlog handleCreateBlog={handleCreateBlog} />
@@ -23,10 +22,7 @@ const BlogList = ({
         .map((blog) => (
           <Blog
             key={blog.id}
-            user={user}
             blog={blog}
-            incrementLikes={incrementLikes}
-            deleteBlog={deleteBlog}
           />
         ))}
     </div>
