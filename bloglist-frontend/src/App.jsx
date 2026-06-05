@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { Routes, Route, Link, useNavigate, useMatch } from 'react-router-dom'
 
 import blogService from './services/blogs'
@@ -8,6 +8,7 @@ import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
 import BlogList from './components/BlogList'
 import BlogPost from './components/BlogPost'
+import CreateNewBlog from './components/CreateNewBlog'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -16,7 +17,6 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [notification, setNotification] = useState({ message: null, type: null })
 
-  const blogRef = useRef()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -51,12 +51,12 @@ const App = () => {
   const handleCreateBlog = async (blogObject) => {
     try {
       const returnedBlog = await blogService.createBlog(blogObject)
-      blogRef.current.toggleVisibility()
       setBlogs([...blogs, returnedBlog])
       setNotification({
         message: `a new blog ${blogObject.title} added`,
         type: 'success',
       })
+      navigate('/')
       setTimeout(() => setNotification({ message: null, type: null }), 5000)
     } catch {
       setNotification({ message: 'A new blog was not created', type: 'error' })
@@ -122,6 +122,7 @@ const App = () => {
       {/* Navigation */}
       <div style={{ padding }}>
         <Link style={padding} to="/">blogs</Link>
+        {user && <Link style={padding} to="/create">new blog</Link>}
         {user ? (
           <span style={padding}>
             {user.name} logged in{' '}
@@ -135,6 +136,11 @@ const App = () => {
       <Notification message={notification.message} type={notification.type} />
 
       <Routes>
+        <Route path="/create" element={
+          <CreateNewBlog handleCreateBlog={handleCreateBlog}
+          />
+        } />
+
         <Route path="/blogs/:id" element={
           <BlogPost 
             blog={blog}
@@ -147,9 +153,6 @@ const App = () => {
         <Route path="/" element={
           <BlogList 
             blogs={blogs}
-            user={user}
-            blogRef={blogRef}
-            handleCreateBlog={handleCreateBlog}
           />
         } />
         
