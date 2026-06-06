@@ -21,7 +21,7 @@ export default function BlogPost({ blog, user, incrementLikes, deleteBlog }) {
       <div>
           Added by {blog.user.username}
       </div>
-      {blog.user?.username === user?.username && (
+      {(blog.user?.username === user?.username || blog.user === user?.id || blog.user?.id === user?.id) && (
         <button className='button-delete' onClick={() => deleteBlog(blog)}>delete</button>
       )}
     </div>
