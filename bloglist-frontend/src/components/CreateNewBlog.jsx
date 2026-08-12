@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { FormCreate } from './styles/FormCreate.styled'
+import { Button } from './styles/Button.styled'
 
 const CreateNewBlog = ({ handleCreateBlog }) => {
   const [title, setTitle] = useState('')
@@ -17,32 +19,29 @@ const CreateNewBlog = ({ handleCreateBlog }) => {
   return (
     <div>
       <h2>Create New</h2>
-      <form onSubmit={addBlog}>
+      <FormCreate onSubmit={addBlog}>
         <label>
-          title
           <input
             placeholder='title'
             type='text' value={title}
             onChange={({ target }) => setTitle(target.value)} />
-        </label><br/>
+        </label>
         <label>
-          author
           <input
             placeholder='author'
             type='text'
             value={author}
             onChange={({ target }) => setAuthor(target.value)} />
-        </label><br/>
+        </label>
         <label>
-          url
           <input
             placeholder='url'
             type='text'
             value={url}
             onChange={({ target }) => setUrl(target.value)} />
-        </label><br/>
-        <button type='submit' className='button-1'>create</button>
-      </form>
+        </label>
+        <Button $primary>CREATE</Button>
+      </FormCreate>
     </div>
   )
 }

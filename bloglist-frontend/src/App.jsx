@@ -9,6 +9,8 @@ import LoginForm from './components/LoginForm'
 import BlogList from './components/BlogList'
 import BlogPost from './components/BlogPost'
 import CreateNewBlog from './components/CreateNewBlog'
+import GlobalStyles from './components/styles/Global.styled'
+import { Container } from './components/styles/Container.styled'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -110,7 +112,7 @@ const App = () => {
   }
 
   const match = useMatch('/blogs/:id')
-  
+
   const blog = match
     ? blogs.find(blog => blog.id === match.params.id)
     : null
@@ -119,8 +121,9 @@ const App = () => {
 
   return (
     <div>
+      <GlobalStyles />
       {/* Navigation */}
-      <div style={{ padding }}>
+      <div style={padding}>
         <Link style={padding} to="/">blogs</Link>
         {user && <Link style={padding} to="/create">new blog</Link>}
         {user ? (
@@ -133,39 +136,41 @@ const App = () => {
         )}
       </div>
 
-      <Notification message={notification.message} type={notification.type} />
+      <Container>
+        <Notification message={notification.message} type={notification.type} />
 
-      <Routes>
-        <Route path="/create" element={
-          <CreateNewBlog handleCreateBlog={handleCreateBlog}
-          />
-        } />
+        <Routes>
+          <Route path="/create" element={
+            <CreateNewBlog handleCreateBlog={handleCreateBlog}
+            />
+          } />
 
-        <Route path="/blogs/:id" element={
-          <BlogPost 
-            blog={blog}
-            user={user}
-            incrementLikes={incrementLikes}
-            deleteBlog={handleDeleteBlog}
-          />
-        } />
+          <Route path="/blogs/:id" element={
+            <BlogPost
+              blog={blog}
+              user={user}
+              incrementLikes={incrementLikes}
+              deleteBlog={handleDeleteBlog}
+            />
+          } />
 
-        <Route path="/" element={
-          <BlogList 
-            blogs={blogs}
-          />
-        } />
-        
-        <Route path="/login" element={
-          <LoginForm 
-            handleLogin={handleLogin}
-            username={username}
-            password={password}
-            setUsername={setUsername}
-            setPassword={setPassword}
-          />
-        } />
-      </Routes>
+          <Route path="/" element={
+            <BlogList
+              blogs={blogs}
+            />
+          } />
+
+          <Route path="/login" element={
+            <LoginForm
+              handleLogin={handleLogin}
+              username={username}
+              password={password}
+              setUsername={setUsername}
+              setPassword={setPassword}
+            />
+          } />
+        </Routes>
+      </Container>
     </div>
   )
 }
