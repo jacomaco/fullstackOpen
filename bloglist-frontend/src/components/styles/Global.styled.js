@@ -7,6 +7,7 @@ const GlobalStyles = createGlobalStyle`
 
   *, *:before, *:after {
     box-sizing: inherit;
+    font-family: arial;
   }
   
 `

@@ -1,10 +1,22 @@
 import styled from 'styled-components'
 
+export const FormLoginContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2rem 0;
+
+  h2 {
+    margin-bottom: 1.5rem;
+  }
+`
+
 export const FormLogin = styled.form`
   display: flex;
   flex-direction: column;
   gap: 1rem;
   width: fit-content;
+  margin: 0 auto;
 
   & label {
     display: flex;

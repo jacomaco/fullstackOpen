@@ -1,12 +1,12 @@
 import Blog from './Blog'
+import { StyledBlogList } from './styles/StyledBlogList.styled'
 
-const BlogList = ({ 
-  blogs, 
+const BlogList = ({
+  blogs,
 }) => {
   return (
-    <div>
+    <StyledBlogList>
       <h1>Blogs</h1>
-
       {[...blogs]
         .sort((a, b) => b.likes - a.likes)
         .map((blog) => (
@@ -15,7 +15,7 @@ const BlogList = ({
             blog={blog}
           />
         ))}
-    </div>
+    </StyledBlogList>
   )
 }
 

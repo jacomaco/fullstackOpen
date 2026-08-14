@@ -1,5 +1,5 @@
 import { Button } from './styles/Button.styled'
-import { FormLogin } from './styles/FormLogin.styled'
+import { FormLogin, FormLoginContainer } from './styles/FormLogin.styled'
 // import { Input } from './styles/Input.styled'
 
 const LoginForm = ({
@@ -10,9 +10,9 @@ const LoginForm = ({
   setPassword
 }) => {
   return (
-    <div>
+    <FormLoginContainer>
       <h2>Log in to application</h2>
-      <FormLogin onSubmit={handleLogin} mode='login'>
+      <FormLogin onSubmit={handleLogin}>
         <label>
           <input
             type='text'
@@ -33,7 +33,7 @@ const LoginForm = ({
         </label>
         <Button $primary>LOGIN</Button>
       </FormLogin>
-    </div>
+    </FormLoginContainer>
   )
 }
 

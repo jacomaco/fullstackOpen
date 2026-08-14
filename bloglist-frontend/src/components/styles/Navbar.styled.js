@@ -30,11 +30,18 @@ const NavBar = styled.nav`
     cursor: pointer;
     outline: inherit; 
     font-size: 1.5rem;
+    text-decoration: none;
+    &:hover{
+      text-decoration: underline;
+    }
   }
   a {
     color: white;
     font-size: 1.5rem;
     text-decoration: none;
+    &:hover{
+      text-decoration: underline;
+    }
   }
 `
 export { NavBar, NavLogo }
