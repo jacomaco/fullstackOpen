@@ -4,7 +4,6 @@ export const FormCreate = styled.form`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  width: 50%;
   border-radius: 5px;
 
   & label {

@@ -4,13 +4,14 @@ import { Routes, Route, Link, useNavigate, useMatch } from 'react-router-dom'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
-import Notification from './components/Notification'
 import LoginForm from './components/LoginForm'
 import BlogList from './components/BlogList'
 import BlogPost from './components/BlogPost'
 import CreateNewBlog from './components/CreateNewBlog'
 import GlobalStyles from './components/styles/Global.styled'
 import { Container } from './components/styles/Container.styled'
+import { NavBar, NavLogo } from './components/styles/Navbar.styled'
+import { StyledNotification } from './components/styles/Notification.styled'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -117,27 +118,32 @@ const App = () => {
     ? blogs.find(blog => blog.id === match.params.id)
     : null
 
-  const padding = { padding: 5 }
 
   return (
     <div>
       <GlobalStyles />
       {/* Navigation */}
-      <div style={padding}>
-        <Link style={padding} to="/">blogs</Link>
-        {user && <Link style={padding} to="/create">new blog</Link>}
+      <NavBar>
+        <NavLogo>Blog App</NavLogo>
+        <Link to="/">blogs</Link>
+        {user && <Link to="/create">new blog</Link>}
         {user ? (
-          <span style={padding}>
-            {user.name} logged in{' '}
-            <button className='button-1' type='button' onClick={handleLogout}>Logout</button>
-          </span>
+          // <span>
+          //   {user.name} logged in{' '}
+          // </span>
+          <button type='button' onClick={handleLogout}>Logout</button>
         ) : (
-          <Link style={padding} to="/login">login</Link>
+          <Link to="/login">login</Link>
         )}
-      </div>
+      </NavBar>
+
+      {notification.message && (
+        <StyledNotification $type={notification.type}>
+          {notification.message}
+        </StyledNotification>
+      )}
 
       <Container>
-        <Notification message={notification.message} type={notification.type} />
 
         <Routes>
           <Route path="/create" element={
