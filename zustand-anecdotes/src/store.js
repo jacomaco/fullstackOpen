@@ -29,7 +29,7 @@ const useAnecdoteStore = create(set => ({
         )
       })
     ),
-    add: content => set(state => ({ anecdotes: [...state.anecdotes, asObject(content)] })),
+    add: newAnecdote => set(state => ({ anecdotes: [...state.anecdotes, newAnecdote] })),
     setFilter: filter => set({ filter }),
     initialize: anecdotes => set({ anecdotes })
   },
