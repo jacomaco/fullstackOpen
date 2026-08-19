@@ -1,8 +1,17 @@
 import Filter from './components/Filter';
 import AnecdoteList from './components/AnecdoteList'
 import AnecdoteForm from './components/AnecdoteForm'
+import { useAnecdoteActions } from './store';
+import { useEffect } from 'react';
+import anecdoteService from './services/anecdoteService';
 
 const App = () => {
+  const { initialize } = useAnecdoteActions()
+  
+  useEffect(() => {
+    anecdoteService.getAll().then(anecdotes => initialize(anecdotes))
+  }, [initialize])
+
   return (
     <div>
       <Filter />
