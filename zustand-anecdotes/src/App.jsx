@@ -7,9 +7,9 @@ import anecdoteService from './services/anecdoteService';
 
 const App = () => {
   const { initialize } = useAnecdoteActions()
-  
+
   useEffect(() => {
-    anecdoteService.getAll().then(anecdotes => initialize(anecdotes))
+    initialize()
   }, [initialize])
 
   return (

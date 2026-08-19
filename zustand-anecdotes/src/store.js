@@ -1,5 +1,6 @@
 
 import { create } from 'zustand'
+import anecdoteService from './services/anecdoteService'
 
 // const anecdotesAtStart = [
 //   'If it hurts, do it more often',
@@ -29,9 +30,15 @@ const useAnecdoteStore = create(set => ({
         )
       })
     ),
-    add: newAnecdote => set(state => ({ anecdotes: [...state.anecdotes, newAnecdote] })),
+    add: async (content) => {
+      const newAnecdote = await anecdoteService.createNew(content)
+      set(state => ({ anecdotes: [...state.anecdotes, newAnecdote] }))
+    },
     setFilter: filter => set({ filter }),
-    initialize: anecdotes => set({ anecdotes })
+    initialize: async () => {
+      const anecdotes = await anecdoteService.getAll()
+      set({ anecdotes })
+    }
   },
 }))
 
