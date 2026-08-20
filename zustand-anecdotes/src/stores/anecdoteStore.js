@@ -1,6 +1,6 @@
-
+import { useNotificationStore } from './notificationStore';
 import { create } from 'zustand'
-import anecdoteService from './services/anecdoteService'
+import anecdoteService from '../services/anecdoteService'
 
 // const anecdotesAtStart = [
 //   'If it hurts, do it more often',
@@ -29,6 +29,7 @@ const useAnecdoteStore = create((set, get) => ({
         id, { ...anecdote, votes: anecdote.votes + 1 }
       )
       set(state => ({ anecdotes: state.anecdotes.map(anecdote => anecdote.id === id ? updated: anecdote) }))
+      useNotificationStore.getState().actions.showNotification()
     },
     add: async content => {
       const newAnecdote = await anecdoteService.createNew(content)

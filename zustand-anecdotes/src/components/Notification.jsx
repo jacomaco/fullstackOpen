@@ -1,3 +1,5 @@
+import { useIsNotificationVisible} from '../stores/notificationStore';
+
 const Notification = () => {
   const style = {
     border: 'solid',
@@ -5,8 +7,13 @@ const Notification = () => {
     borderWidth: 1,
     marginBottom: 10
   }
+  const visible = useIsNotificationVisible()
 
-  return <div style={style}>render here notification...</div>
+  return (
+    <>
+    { visible && <div style={style}>render here notification...</div> }
+    </>
+  )
 }
 
 export default Notification
