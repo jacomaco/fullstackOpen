@@ -1,4 +1,3 @@
-import anecdoteService from '../services/anecdoteService'
 import { useAnecdoteActions } from '../store'
 
 const AnecdoteForm = () => {

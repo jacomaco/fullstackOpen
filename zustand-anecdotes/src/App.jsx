@@ -8,9 +8,7 @@ import anecdoteService from './services/anecdoteService';
 const App = () => {
   const { initialize } = useAnecdoteActions()
 
-  useEffect(() => {
-    initialize()
-  }, [initialize])
+  useEffect(() => { initialize() }, [initialize])
 
   return (
     <div>
