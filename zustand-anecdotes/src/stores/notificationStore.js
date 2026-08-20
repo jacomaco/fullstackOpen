@@ -1,14 +1,19 @@
 import { create } from 'zustand';
 
-export const useNotificationStore = create((set) => ({
+export const useNotificationStore = create((set, get) => ({
   visible: false,
   message: '',
+  timeoutId: '',
   actions: {
-    showNotification: (anecdote) => {
-      set({ visible: true, message: anecdote.content })
-      setTimeout(() => {
-        set({ visible: false, message: '' })
+    showNotification: (messageText) => {
+      if (get().timeoutId) {
+        clearTimeout(get().timeoutId)
+      }
+      set({ visible: true, message: messageText })
+      const id = setTimeout(() => {
+        set({ visible: false, message: '', timeoutId: null })
       }, 5000)
+      set({ timeoutId: id })
     }
   }
 }))

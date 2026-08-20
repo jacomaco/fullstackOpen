@@ -12,7 +12,7 @@ const Notification = () => {
 
   return (
     <>
-      {visible && <div style={style}>You voted '{message}'</div> }
+      {visible && <div style={style}>{message}</div> }
     </>
   )
 }

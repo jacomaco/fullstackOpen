@@ -11,13 +11,13 @@ import anecdoteService from '../services/anecdoteService'
 //   'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.'
 // ]
 
-const getId = () => (100000 * Math.random()).toFixed(0)
+// const getId = () => (100000 * Math.random()).toFixed(0)
 
-const asObject = anecdote => ({
-  content: anecdote,
-  id: getId(),
-  votes: 0
-})
+// const asObject = anecdote => ({
+//   content: anecdote,
+//   id: getId(),
+//   votes: 0
+// })
 
 const useAnecdoteStore = create((set, get) => ({
   anecdotes: [],
@@ -28,18 +28,29 @@ const useAnecdoteStore = create((set, get) => ({
       const updated = await anecdoteService.vote(
         id, { ...anecdote, votes: anecdote.votes + 1 }
       )
-      set(state => ({ anecdotes: state.anecdotes.map(anecdote => anecdote.id === id ? updated: anecdote) }))
-      useNotificationStore.getState().actions.showNotification(anecdote)
+      set(state => ({ anecdotes: state.anecdotes.map(anecdote => anecdote.id === id ? updated : anecdote) }))
+      useNotificationStore.getState().actions.showNotification(`you voted '${anecdote.content}'`)
+    },
+    remove: async id => {
+      const removedAnecdote = get().anecdotes.find(anecdote => anecdote.id === id)
+      await anecdoteService.deleteAnecdote(id)
+      set(state => ({
+        anecdotes: state.anecdotes.filter(anecdote => anecdote.id !== id)
+      }))
+      if (removedAnecdote) {
+        useNotificationStore.getState().actions.showNotification(`you deleted '${removedAnecdote.content}'`)
+      }
     },
     add: async content => {
       const newAnecdote = await anecdoteService.createNew(content)
       set(state => ({ anecdotes: [...state.anecdotes, newAnecdote] }))
+      useNotificationStore.getState().actions.showNotification(`created anecdote '${newAnecdote.content}'`)
     },
     setFilter: filter => set({ filter }),
     initialize: async () => {
       const anecdotes = await anecdoteService.getAll()
       set({ anecdotes })
-    }
+    },
   },
 }))
 
