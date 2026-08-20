@@ -1,4 +1,4 @@
-import { useIsNotificationVisible} from '../stores/notificationStore';
+import { useIsNotificationVisible, useNotificationMessage } from '../stores/notificationStore';
 
 const Notification = () => {
   const style = {
@@ -8,10 +8,11 @@ const Notification = () => {
     marginBottom: 10
   }
   const visible = useIsNotificationVisible()
+  const message = useNotificationMessage()
 
   return (
     <>
-    { visible && <div style={style}>render here notification...</div> }
+      {visible && <div style={style}>You voted '{message}'</div> }
     </>
   )
 }

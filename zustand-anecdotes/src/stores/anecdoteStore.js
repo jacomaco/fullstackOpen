@@ -29,7 +29,7 @@ const useAnecdoteStore = create((set, get) => ({
         id, { ...anecdote, votes: anecdote.votes + 1 }
       )
       set(state => ({ anecdotes: state.anecdotes.map(anecdote => anecdote.id === id ? updated: anecdote) }))
-      useNotificationStore.getState().actions.showNotification()
+      useNotificationStore.getState().actions.showNotification(anecdote)
     },
     add: async content => {
       const newAnecdote = await anecdoteService.createNew(content)
